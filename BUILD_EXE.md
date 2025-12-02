@@ -19,6 +19,7 @@
 
    To polecenie:
    - Skompiluje kod TypeScript do JavaScript (CommonJS)
+   - Zminifikuje kod JavaScript (zmniejsza rozmiar)
    - Utworzy plik wykonywalny `ksef-pdf-generator.exe` dla Windows 64-bit
 
 3. **Plik .exe będzie dostępny w głównym katalogu projektu** jako `ksef-pdf-generator.exe`
@@ -78,7 +79,8 @@ ksef-pdf-generator.exe --help
 
 - Plik .exe jest samodzielny i nie wymaga zainstalowanego Node.js do uruchomienia
 - Wszystkie zależności są dołączone do pliku .exe
-- Rozmiar pliku .exe może być dość duży (około 40-50 MB) ze względu na dołączony runtime Node.js
+- Kod JavaScript jest zminifikowany przed pakowaniem, co zmniejsza rozmiar pliku
+- Rozmiar pliku .exe może być dość duży (około 40 MB) ze względu na dołączony runtime Node.js
 - Tryb strumieniowy (`--stream`) jest idealny do integracji z innymi aplikacjami, które mogą przekazywać dane przez stdin/stdout
 - W trybie strumieniowym wszystkie komunikaty błędów są zapisywane do stderr, a dane wyjściowe (PDF) do stdout
 

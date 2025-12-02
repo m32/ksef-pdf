@@ -2,7 +2,8 @@
 
 import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve, dirname, basename } from 'path';
-import { generateInvoiceNode, generatePDFUPONode } from './node-helpers';
+import { createHash } from 'crypto';
+import { generateInvoiceNode, generatePDFUPONode, parseXMLString } from './node-helpers';
 import { AdditionalDataTypes } from './lib-public/types/common.types';
 
 interface CliArgs {
@@ -83,11 +84,14 @@ function parseArgs(): CliArgs {
 }
 
 function printHelp(): void {
+//  const exeName = basename(process.argv[1]);
+  const exeName = 'ksef-pdf-generator.exe';
+  
   console.log(`
 KSEF PDF Generator - Generator PDF dla faktur i UPO
 
 Użycie:
-  node cli.js [opcje]
+  ${exeName} [opcje]
 
 Opcje:
   -i, --input <ścieżka>      Ścieżka do pliku XML wejściowego (wymagane w trybie plikowym)
@@ -100,13 +104,13 @@ Opcje:
 
 Przykłady:
   # Generowanie faktury (tryb plikowy)
-  node cli.js -i invoice.xml -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr"
+  ${exeName} -i invoice.xml -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr"
 
   # Generowanie UPO (tryb plikowy)
-  node cli.js -i upo.xml -t upo -o output.pdf
+  ${exeName} -i upo.xml -t upo -o output.pdf
 
   # Generowanie faktury (tryb strumieniowy)
-  cat invoice.xml | node cli.js --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
+  cat invoice.xml | ${exeName} --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
 `);
 }
 
@@ -127,6 +131,88 @@ async function readStdin(): Promise<string> {
       reject(error);
     });
   });
+}
+
+/**
+ * Oblicza SHA256 hash i zwraca go w formacie Base64URL
+ */
+function calculateSHA256Base64URL(data: string): string {
+  const hash = createHash('sha256').update(data, 'utf8').digest('base64');
+  // Konwersja Base64 na Base64URL: zamiana + na -, / na _, usunięcie padding =
+  return hash.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+/**
+ * Wyciąga wartość NIP z parsowanego XML
+ */
+function extractNIP(xml: any): string | null {
+  const nip = xml?.Faktura?.Podmiot1?.DaneIdentyfikacyjne?.NIP;
+  if (!nip) {
+    return null;
+  }
+  // NIP może być stringiem lub obiektem z _text
+  return typeof nip === 'string' ? nip : nip._text || null;
+}
+
+/**
+ * Wyciąga wartość P_1 z parsowanego XML i formatuje na dd-mm-yyyy
+ */
+function extractP1Formatted(xml: any): string | null {
+  const p1 = xml?.Faktura?.Fa?.P_1;
+  if (!p1) {
+    return null;
+  }
+  
+  // P_1 może być stringiem lub obiektem z _text
+  const dateStr = typeof p1 === 'string' ? p1 : p1._text || null;
+  if (!dateStr) {
+    return null;
+  }
+  
+  // Format wejściowy: yyyy-mm-dd (może zawierać czas, więc bierzemy tylko część daty)
+  const dateMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!dateMatch) {
+    return dateStr; // Jeśli format nie pasuje, zwróć oryginalną wartość
+  }
+  
+  // Format wyjściowy: dd-mm-yyyy
+  const [, year, month, day] = dateMatch;
+  return `${day}-${month}-${year}`;
+}
+
+/**
+ * Podmienia placeholdery w qrCode na wartości z XML
+ */
+function processQRCodeTemplate(qrCodeTemplate: string, xmlContent: string, xml: any): string {
+  let result = qrCodeTemplate;
+  
+  // {hash} - SHA256 Base64URL całego XML
+  if (result.includes('{hash}')) {
+    const hash = calculateSHA256Base64URL(xmlContent);
+    result = result.replace(/{hash}/g, hash);
+  }
+  
+  // {nip} - NIP z Podmiot1
+  if (result.includes('{nip}')) {
+    const nip = extractNIP(xml);
+    if (nip) {
+      result = result.replace(/{nip}/g, nip);
+    } else {
+      throw new Error('Nie można znaleźć pola NIP w pliku XML (Faktura.Podmiot1.DaneIdentyfikacyjne.NIP)');
+    }
+  }
+  
+  // {p1} - P_1 w formacie dd-mm-yyyy
+  if (result.includes('{p1}')) {
+    const p1 = extractP1Formatted(xml);
+    if (p1) {
+      result = result.replace(/{p1}/g, p1);
+    } else {
+      throw new Error('Nie można znaleźć pola P_1 w pliku XML (Faktura.Fa.P_1)');
+    }
+  }
+  
+  return result;
 }
 
 async function main(): Promise<void> {
@@ -167,9 +253,27 @@ async function main(): Promise<void> {
         process.exit(1);
       }
 
+      // Parsuj XML dla przetworzenia qrCode
+      let parsedXml: any;
+      try {
+        parsedXml = parseXMLString(inputContent);
+      } catch (error) {
+        process.stderr.write(`Błąd podczas parsowania XML: ${error}\n`);
+        process.exit(1);
+      }
+
+      // Przetwórz qrCode - podmień placeholdery
+      let processedQRCode: string;
+      try {
+        processedQRCode = processQRCodeTemplate(args.qrCode, inputContent, parsedXml);
+      } catch (error) {
+        process.stderr.write(`Błąd podczas przetwarzania qrCode: ${error}\n`);
+        process.exit(1);
+      }
+
       const additionalData: AdditionalDataTypes = {
         nrKSeF: args.nrKSeF,
-        qrCode: args.qrCode,
+        qrCode: processedQRCode,
       };
 
       if (!args.stream) {
