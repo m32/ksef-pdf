@@ -112,6 +112,10 @@ Przykłady:
 
   # Generowanie faktury (tryb strumieniowy)
   ${exeName} --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://ksef.mf.gov.pl/client-app/invoice/{nip}/{p1}/{hash}" < in.xml > output.pdf
+
+  # Generowanie UPO (tryb strumieniowy)
+  ${exeName} --stream -t upo < upo.xml > output.pdf
+
 `);
 }
 
