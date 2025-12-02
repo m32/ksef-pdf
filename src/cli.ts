@@ -111,7 +111,7 @@ Przykłady:
   ${exeName} -i upo.xml -t upo -o output.pdf
 
   # Generowanie faktury (tryb strumieniowy)
-  cat invoice.xml | ${exeName} --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://ksef.mf.gov.pl/client-app/invoice/{nip}/{p1}/{hash}" > output.pdf
+  ${exeName} --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://ksef.mf.gov.pl/client-app/invoice/{nip}/{p1}/{hash}" < in.xml > output.pdf
 `);
 }
 
