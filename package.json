@@ -4,6 +4,14 @@
   "scripts": {
     "dev": "vite --mode public --config vite.config.ts",
     "build": "vite build --mode production",
+    "build:cli": "tsc -p tsconfig.cli.json",
+    "build:bundle": "node scripts/create-bundle.cjs",
+    "build:exe": "npm run build:cli && pkg dist-cli/cli.js --targets node18-win-x64 --output ksef-pdf-generator.exe",
+    "build:dll": "npm run build:bundle && node-gyp configure build --target_arch=x64",
+    "rebuild:dll": "npm run build:bundle && node-gyp rebuild --target_arch=x64",
+    "build:dll:embedded": "npm run build:bundle && copy binding-embedded.gyp binding.gyp && node-gyp configure build --target_arch=x64 && copy binding.gyp.bak binding.gyp 2>nul || echo",
+    "rebuild:dll:embedded": "npm run build:bundle && copy binding-embedded.gyp binding.gyp && node-gyp rebuild --target_arch=x64 && copy binding.gyp.bak binding.gyp 2>nul || echo",
+    "clean:dll": "node-gyp clean",
     "type": "tsc -p src/app-public/tsconfig.json --noEmit",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -30,6 +38,7 @@
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@stylistic/eslint-plugin": "^5.2.3",
+    "@types/node": "^20.0.0",
     "@types/pdfmake": "^0.2.11",
     "@typescript-eslint/eslint-plugin": "^8.40.0",
     "@typescript-eslint/parser": "^8.40.0",
@@ -42,6 +51,8 @@
     "globals": "^16.3.0",
     "jiti": "^2.5.1",
     "jsdom": "^26.1.0",
+    "node-gyp": "^10.0.0",
+    "pkg": "^5.8.1",
     "prettier": "^3.6.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.40.0",
@@ -50,7 +61,19 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "node-addon-api": "^7.0.0",
     "pdfmake": "^0.2.20",
     "xml-js": "^1.6.11"
+  },
+  "pkg": {
+    "scripts": [
+      "dist-cli/**/*.js"
+    ],
+    "assets": [
+      "node_modules/pdfmake/build/vfs_fonts.js"
+    ],
+    "targets": [
+      "node18-win-x64"
+    ]
   }
 }

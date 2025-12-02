@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "outDir": "./dist-cli",
+    "rootDir": "./src",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "paths": {
+      "@lib-public/*": ["lib-public/*"],
+      "@lib-private/*": ["lib-private/*"]
+    }
+  },
+  "include": ["src/cli.ts", "src/node-helpers.ts", "src/lib-public/**/*", "src/shared/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts", "src/app-public/**/*", "src/app-private/**/*"]
+}
+
