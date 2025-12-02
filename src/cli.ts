@@ -84,8 +84,9 @@ function parseArgs(): CliArgs {
 }
 
 function printHelp(): void {
-//  const exeName = basename(process.argv[1]);
-  const exeName = 'ksef-pdf-generator.exe';
+  // process.execPath zawiera ścieżkę do pliku wykonywalnego (.exe lub node)
+  // basename() wyciąga tylko nazwę pliku
+  const exeName = basename(process.execPath);
   
   console.log(`
 KSEF PDF Generator - Generator PDF dla faktur i UPO
@@ -98,19 +99,19 @@ Opcje:
   -o, --output <ścieżka>     Ścieżka do pliku PDF wyjściowego (opcjonalne, tylko w trybie plikowym)
   -t, --type <typ>           Typ dokumentu: 'invoice' lub 'upo' (wymagane)
   --nrKSeF <wartość>         Numer KSeF (wymagane dla faktur)
-  --qrCode <url>             URL kodu QR (wymagane dla faktur)
+  --qrCode <url>             URL kodu QR (wymagane dla faktur), obsługuje parametry {hash}, {nip}, {p1}
   --stream                   Tryb strumieniowy: XML ze stdin, PDF do stdout
   -h, --help                 Wyświetla tę pomoc
 
 Przykłady:
   # Generowanie faktury (tryb plikowy)
-  ${exeName} -i invoice.xml -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr"
+  ${exeName} -i invoice.xml -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://ksef.mf.gov.pl/client-app/invoice/{nip}/{p1}/{hash}"
 
   # Generowanie UPO (tryb plikowy)
   ${exeName} -i upo.xml -t upo -o output.pdf
 
   # Generowanie faktury (tryb strumieniowy)
-  cat invoice.xml | ${exeName} --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
+  cat invoice.xml | ${exeName} --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://ksef.mf.gov.pl/client-app/invoice/{nip}/{p1}/{hash}" > output.pdf
 `);
 }
 
