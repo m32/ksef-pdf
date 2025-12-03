@@ -1,4 +1,4 @@
-# Instrukcja kompilacji do pliku .exe
+# Instrukcja kompilacji i uruchamiania aplikacji CLI
 
 ## Wymagania
 
@@ -12,30 +12,43 @@
    npm install
    ```
 
-2. **Skompiluj aplikację do pliku .exe**:
+2. **Skompiluj aplikację**:
    ```bash
-   npm run build:exe
+   npm run build:cli
    ```
 
    To polecenie:
    - Skompiluje kod TypeScript do JavaScript (CommonJS)
-   - Zminifikuje kod JavaScript (zmniejsza rozmiar)
-   - Utworzy plik wykonywalny `ksef-pdf-generator.exe` dla Windows 64-bit
+   - Utworzy pliki JavaScript w katalogu `dist-cli/`
 
-3. **Plik .exe będzie dostępny w głównym katalogu projektu** jako `ksef-pdf-generator.exe`
+3. **Rozmiar skompilowanych plików**: ~2.9 MB (vs ~36 MB dla pakowanego .exe)
 
-## Użycie wygenerowanego pliku .exe
+## Użycie skompilowanej aplikacji
 
-### Tryb plikowy
+### Sposób 1: Użycie pliku .bat (Windows)
+
+Najprostszy sposób na Windows - użyj pliku `ksef-pdf-generator.bat`:
 
 #### Generowanie faktury PDF:
 ```bash
-ksef-pdf-generator.exe -i invoice.xml -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr"
+ksef-pdf-generator.bat -i invoice.xml -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr"
 ```
 
 #### Generowanie UPO PDF:
 ```bash
-ksef-pdf-generator.exe -i upo.xml -t upo -o output.pdf
+ksef-pdf-generator.bat -i upo.xml -t upo -o output.pdf
+```
+
+### Sposób 2: Bezpośrednie uruchomienie przez Node.js
+
+#### Generowanie faktury PDF:
+```bash
+node dist-cli/cli.min.js -i invoice.xml -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr"
+```
+
+#### Generowanie UPO PDF:
+```bash
+node dist-cli/cli.min.js -i upo.xml -t upo -o output.pdf
 ```
 
 ### Tryb strumieniowy (--stream)
@@ -45,24 +58,30 @@ W trybie strumieniowym aplikacja czyta XML ze standardowego wejścia (stdin) i z
 #### Generowanie faktury PDF (tryb strumieniowy):
 ```bash
 # Windows PowerShell
-Get-Content invoice.xml | .\ksef-pdf-generator.exe --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
+Get-Content invoice.xml | node dist-cli/cli.min.js --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
 
 # Windows CMD
-type invoice.xml | ksef-pdf-generator.exe --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
+type invoice.xml | node dist-cli/cli.min.js --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
+
+# Linux/Mac
+cat invoice.xml | node dist-cli/cli.min.js --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
 ```
 
 #### Generowanie UPO PDF (tryb strumieniowy):
 ```bash
 # Windows PowerShell
-Get-Content upo.xml | .\ksef-pdf-generator.exe --stream -t upo > output.pdf
+Get-Content upo.xml | node dist-cli/cli.min.js --stream -t upo > output.pdf
 
 # Windows CMD
-type upo.xml | ksef-pdf-generator.exe --stream -t upo > output.pdf
+type upo.xml | node dist-cli/cli.min.js --stream -t upo > output.pdf
+
+# Linux/Mac
+cat upo.xml | node dist-cli/cli.min.js --stream -t upo > output.pdf
 ```
 
 ### Pomoc:
 ```bash
-ksef-pdf-generator.exe --help
+node dist-cli/cli.min.js --help
 ```
 
 ## Parametry
@@ -77,11 +96,18 @@ ksef-pdf-generator.exe --help
 
 ## Uwagi
 
-- Plik .exe jest samodzielny i nie wymaga zainstalowanego Node.js do uruchomienia
-- Wszystkie zależności są dołączone do pliku .exe
-- Kod JavaScript jest zminifikowany przed pakowaniem, co zmniejsza rozmiar pliku
-- Rozmiar pliku .exe może być dość duży (około 40 MB) ze względu na dołączony runtime Node.js
-- Tryb strumieniowy (`--stream`) jest idealny do integracji z innymi aplikacjami, które mogą przekazywać dane przez stdin/stdout
-- W trybie strumieniowym wszystkie komunikaty błędów są zapisywane do stderr, a dane wyjściowe (PDF) do stdout
+- **Wymagany Node.js**: Aplikacja wymaga zainstalowanego Node.js (v18+) na systemie docelowym
+- **Rozmiar**: Skompilowane pliki JavaScript zajmują tylko ~2.9 MB (vs ~36 MB dla pakowanego .exe)
+- **Zależności**: Wszystkie zależności muszą być zainstalowane przez `npm install` przed uruchomieniem
+- **Plik .bat**: Plik `ksef-pdf-generator.bat` ułatwia uruchamianie na Windows
+- **Tryb strumieniowy**: Tryb strumieniowy (`--stream`) jest idealny do integracji z innymi aplikacjami
+- **Komunikaty błędów**: W trybie strumieniowym wszystkie komunikaty błędów są zapisywane do stderr, a dane wyjściowe (PDF) do stdout
+
+## Porównanie z pakowaniem
+
+| Metoda | Rozmiar | Wymaga Node.js | Zalety | Wady |
+|--------|---------|----------------|--------|------|
+| **Bez pakowania** (obecne) | ~2.9 MB | ✅ Tak | Mały rozmiar, łatwa aktualizacja | Wymaga Node.js |
+| **Z pakowaniem (.exe)** | ~36 MB | ❌ Nie | Samodzielny plik | Duży rozmiar, problemy z metadanymi |
 
 
