@@ -23,63 +23,28 @@
 
 ## Użycie skompilowanej aplikacji
 
-### Sposób 1: Użycie pliku .exe (Windows)
+### Użycie pliku .exe (Windows)
 
 Najprostszy sposób na Windows - użyj pliku `ksef-pdf-generator.bat`:
 
 #### Generowanie faktury PDF:
 ```bash
-ksef-pdf-generator.exe -i invoice.xml -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr"
+ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr"
 ```
 
 #### Generowanie UPO PDF:
 ```bash
-ksef-pdf-generator.exe -i upo.xml -t upo -o output.pdf
+ksef-pdf-generator.exe -i upo.xml -t upo -o upo.pdf
 ```
 
-### Sposób 2: Bezpośrednie uruchomienie przez Node.js
-
-#### Generowanie faktury PDF:
+#### Generowanie faktury PDF w strumieniu z użyciem parametrów dla kodu QR:
 ```bash
-node dist-cli/cli.min.js -i invoice.xml -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr"
-```
-
-#### Generowanie UPO PDF:
-```bash
-node dist-cli/cli.min.js -i upo.xml -t upo -o output.pdf
-```
-
-### Tryb strumieniowy (--stream)
-
-W trybie strumieniowym aplikacja czyta XML ze standardowego wejścia (stdin) i zapisuje PDF do standardowego wyjścia (stdout). Błędy są zapisywane do stderr.
-
-#### Generowanie faktury PDF (tryb strumieniowy):
-```bash
-# Windows PowerShell
-Get-Content invoice.xml | node dist-cli/cli.min.js --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
-
-# Windows CMD
-type invoice.xml | node dist-cli/cli.min.js --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
-
-# Linux/Mac
-cat invoice.xml | node dist-cli/cli.min.js --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://example.com/qr" > output.pdf
-```
-
-#### Generowanie UPO PDF (tryb strumieniowy):
-```bash
-# Windows PowerShell
-Get-Content upo.xml | node dist-cli/cli.min.js --stream -t upo > output.pdf
-
-# Windows CMD
-type upo.xml | node dist-cli/cli.min.js --stream -t upo > output.pdf
-
-# Linux/Mac
-cat upo.xml | node dist-cli/cli.min.js --stream -t upo > output.pdf
+ksef-pdf-generator.exe --stream -t invoice --nrKSeF "123-2025-ABC" --qrCode "https://ksef.mf.gov.pl/client-app/invoice/{nip}/{p1}/{hash}" < invoice.xml > invoice.pdf
 ```
 
 ### Pomoc:
 ```bash
-node dist-cli/cli.min.js --help
+ksef-pdf-generator.exe --help
 ```
 
 ## Parametry
@@ -95,9 +60,7 @@ node dist-cli/cli.min.js --help
 ## Uwagi
 
 - **Wymagany Node.js**: Aplikacja wymaga zainstalowanego Node.js (v18+) na systemie docelowym
-- **Rozmiar**: Skompilowane pliki JavaScript zajmują tylko ~2.9 MB (vs ~36 MB dla pakowanego .exe)
 - **Zależności**: Wszystkie zależności muszą być zainstalowane przez `npm install` przed uruchomieniem
-- **Plik .bat**: Plik `ksef-pdf-generator.bat` ułatwia uruchamianie na Windows
 - **Tryb strumieniowy**: Tryb strumieniowy (`--stream`) jest idealny do integracji z innymi aplikacjami
 - **Komunikaty błędów**: W trybie strumieniowym wszystkie komunikaty błędów są zapisywane do stderr, a dane wyjściowe (PDF) do stdout
 
