@@ -4,6 +4,9 @@
   "scripts": {
     "build": "npx esbuild src/cli.ts --bundle --platform=node --minify --outfile=dist/bundle.js && npx pkg dist/bundle.js --targets node18-win-x64 --output KSeF-PDFGen.exe",
     "build:with-version": "npm run build && node scripts/apply-rc-version-resourcehacker.cjs",
+    "build:cli": "npx esbuild src/cli.ts --bundle --platform=node --minify --outfile=dist/bundle.js",
+    "build:exe": "npm run build:cli && npx pkg dist/bundle.js --targets node18-win-x64 --output KSeF-PDFGen.exe",
+    "build:elf": "npm run build:cli && npx pkg dist/bundle.js --targets node18-linux-x64 --output KSeF-PDFGen",
     "type": "tsc -p tsconfig.json --noEmit"
   },
   "main": "./ksef-fe-invoice-converter.umd.cjs",

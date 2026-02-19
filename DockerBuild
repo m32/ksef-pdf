@@ -1,0 +1,20 @@
+#!/bin/bash
+build() {
+docker build -t node-app .
+}
+
+install() {
+docker run -it --rm --user 1000:1000 \
+    -v $PWD:/usr/src/app \
+    node-app \
+    npm install
+}
+
+compile() {
+docker run -it --rm --user 1000:1000 \
+    -v $PWD:/usr/src/app \
+    node-app \
+    npm run build:elf
+}
+
+$*
