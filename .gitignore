@@ -15,3 +15,15 @@ out
 .idea
 .vscode
 *.swp
+
+dist-server/
+
+ksef-exe-fa-offline.html
+ksef-exe-fa-offline.pdf
+ksef-exe-fa-online.html
+ksef-exe-fa-online.pdf
+ksef-exe-upo.html
+ksef-exe-upo.pdf
+KSeF-PDFGen
+ksef-rest-invoice.pdf
+ksef-rest-upo.pdf
