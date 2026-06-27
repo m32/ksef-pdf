@@ -1,5 +1,3 @@
-import pdfMake, { TCreatedPdf } from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { Position } from '@shared/enums/common.enum';
 import { generateStyle } from '@shared/PDF-functions';
@@ -17,9 +15,7 @@ import { FaRR } from './types/FaRR.types';
 import { generateWatermark } from '@shared/consts/watermark';
 import i18n from 'i18next';
 
-pdfMake.addVirtualFileSystem(pdfFonts);
-
-export function generateFARR(invoice: FaRR, additionalData: AdditionalDataTypes): TCreatedPdf {
+export function generateFARR(invoice: FaRR, additionalData: AdditionalDataTypes): TDocumentDefinitions {
   const docDefinition: TDocumentDefinitions = {
     ...generateWatermark(additionalData?.watermark),
     content: [
@@ -43,5 +39,5 @@ export function generateFARR(invoice: FaRR, additionalData: AdditionalDataTypes)
     ...generateStyle(),
   };
 
-  return pdfMake.createPdf(docDefinition);
+  return docDefinition;
 }

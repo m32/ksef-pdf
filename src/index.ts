@@ -11,3 +11,5 @@ export { generateStyle } from './shared/PDF-functions';
 export * from './shared/enums/common.enum';
 export { i18next };
 export { i18nReady } from './lib-public/i18n/i18n-init';
+export type { AdditionalDataTypes } from './lib-public/types/common.types';
+export { stripPrefix } from './shared/XML-parser';
