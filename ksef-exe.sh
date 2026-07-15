@@ -5,6 +5,7 @@
 -i assets/invoice.xml \
 --nrKSeF "1111111111-20251107-080080679C57-14" \
 --qrCode "https://qr.ksef.mf.gov.pl/invoice/{nip}/{p1}/{hash}" \
+--acdate 2026.05.02 \
 -o ksef-exe-fa-online.pdf
 
 ./KSeF-PDFGen \

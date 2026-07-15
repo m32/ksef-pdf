@@ -64,6 +64,12 @@ function parseArgs(): CliArgs {
           i++;
         }
         break;
+      case '--acdate':
+        if (nextArg) {
+          result.acDate = nextArg;
+          i++;
+        }
+        break;
       case '--nrKSeF':
         if (nextArg) {
           if (!result.qr2Code) {
@@ -108,6 +114,12 @@ function parseArgs(): CliArgs {
     process.exit(1);
   }
 
+  if (!result.output) {
+    console.error('Błąd: W trybie plikowym wymagany jest argument --output');
+    printHelp();
+    process.exit(1);
+  }
+
   return result as CliArgs;
 }
 
@@ -126,9 +138,10 @@ Użycie:
   ${exeName} -h
 
 Opcje:
-  -i, --input <ścieżka>      Ścieżka do pliku XML wejściowego
-  -o, --output <ścieżka>     Ścieżka do pliku wyjściowego
+  -i, --input <ścieżka>      Ścieżka do pliku XML wejściowego (wymagane)
+  -o, --output <ścieżka>     Ścieżka do pliku wyjściowego (wymagane)
   -t, --type <typ>           Typ dokumentu: 'invoice' lub 'upo' (wymagane)
+  --acdate <data>            Data nadania numer KSeF
   --nrKSeF <wartość>         Numer KSeF (wymagane dla faktur)
   --qrCode <url>             URL kodu QR (wymagane dla faktur), obsługuje parametry {hash}, {nip}, {p1}
   --qr2Code <url>            URL kodu QR2 (wymagane dla faktur), obsługuje parametry {hash}, {nip}, {p1}
@@ -137,12 +150,12 @@ Opcje:
 
 Przykłady:
   # Generowanie faktury
-  ${exeName} -i invoice.xml -t invoice --nrKSeF "1111111111-20251107-080080679C57-14" --qrCode "https://qr.ksef.mf.gov.pl/invoice/{nip}/{p1}/{hash}"
-  ${exeName} -i invoice.xml -t invoice --nrKSeF "1111111111-20251107-080080679C57-14" --qrCode "https://qr.ksef.mf.gov.pl/invoice/{nip}/{p1}/{hash}" --html
+  ${exeName} -i invoice.xml -o output.pdf -t invoice --nrKSeF "1111111111-20251107-080080679C57-14" --qrCode "https://qr.ksef.mf.gov.pl/invoice/{nip}/{p1}/{hash}"
+  ${exeName} -i invoice.xml -o output.pdf -t invoice --nrKSeF "1111111111-20251107-080080679C57-14" --qrCode "https://qr.ksef.mf.gov.pl/invoice/{nip}/{p1}/{hash}" --html
 
   # Generowanie faktury offline
-  ${exeName} -i invoice.xml -t invoice --qrCode "https://qr.ksef.mf.gov.pl/invoice/{nip}/{p1}/{hash}" --qrCode2 "https://qr.ksef.mf.gov.pl/certificate/Nip/1111111111/{nip}/01F20A5D352AE590/..."
-  ${exeName} -i invoice.xml -t invoice --qrCode "https://qr.ksef.mf.gov.pl/invoice/{nip}/{p1}/{hash}" --qrCode2 "https://qr.ksef.mf.gov.pl/certificate/Nip/1111111111/{nip}/01F20A5D352AE590/..." --html
+  ${exeName} -i invoice.xml -o output.pdf -t invoice --qrCode "https://qr.ksef.mf.gov.pl/invoice/{nip}/{p1}/{hash}" --qrCode2 "https://qr.ksef.mf.gov.pl/certificate/Nip/1111111111/{nip}/01F20A5D352AE590/..."
+  ${exeName} -i invoice.xml -o output.pdf -t invoice --qrCode "https://qr.ksef.mf.gov.pl/invoice/{nip}/{p1}/{hash}" --qrCode2 "https://qr.ksef.mf.gov.pl/certificate/Nip/1111111111/{nip}/01F20A5D352AE590/..." --html
 
   # Generowanie UPO
   ${exeName} -i upo.xml -t upo -o output.pdf
@@ -303,6 +316,7 @@ async function main(): Promise<void> {
         nrKSeF: args.nrKSeF,
         qrCode: processedQRCode,
         qr2Code: processedQR2Code,
+        acDate: args.acDate ? args.acDate : null,
       };
 
       process.stdout.write(`Generowanie ${args.html ? 'HTML' : 'PDF'} faktury...\n`);
