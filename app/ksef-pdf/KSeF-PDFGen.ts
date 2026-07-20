@@ -27,7 +27,10 @@ function parseXMLString(xmlString: string): any {
 interface CliArgs {
   input?: string;
   output?: string;
+  acDate?: string;
+  watermark?: string;
   type: 'invoice' | 'upo';
+  lang: 'pl' | 'en';
   nrKSeF?: string;
   qrCode?: string;
   qr2Code?: string;
@@ -36,7 +39,7 @@ interface CliArgs {
 
 function parseArgs(): CliArgs {
   const args = process.argv.slice(2);
-  const result: Partial<CliArgs> = {};
+  const result: Partial<CliArgs> = { html: false };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -67,6 +70,12 @@ function parseArgs(): CliArgs {
       case '--acdate':
         if (nextArg) {
           result.acDate = nextArg;
+          i++;
+        }
+        break;
+      case '--watermark':
+        if (nextArg) {
+          result.watermark = nextArg;
           i++;
         }
         break;
@@ -114,12 +123,6 @@ function parseArgs(): CliArgs {
     process.exit(1);
   }
 
-  if (!result.output) {
-    console.error('Błąd: W trybie plikowym wymagany jest argument --output');
-    printHelp();
-    process.exit(1);
-  }
-
   return result as CliArgs;
 }
 
@@ -139,7 +142,7 @@ Użycie:
 
 Opcje:
   -i, --input <ścieżka>      Ścieżka do pliku XML wejściowego (wymagane)
-  -o, --output <ścieżka>     Ścieżka do pliku wyjściowego (wymagane)
+  -o, --output <ścieżka>     Ścieżka do pliku wyjściowego
   -t, --type <typ>           Typ dokumentu: 'invoice' lub 'upo' (wymagane)
   --acdate <data>            Data nadania numer KSeF
   --nrKSeF <wartość>         Numer KSeF (wymagane dla faktur)
@@ -314,9 +317,11 @@ async function main(): Promise<void> {
 
       const additionalData: AdditionalDataTypes = {
         nrKSeF: args.nrKSeF,
+        acDate: args.acDate ? args.acDate : '',
         qrCode: processedQRCode,
         qr2Code: processedQR2Code,
-        acDate: args.acDate ? args.acDate : null,
+        isMobile: false,
+        watermark: args.watermark ? args.watermark : '',
       };
 
       process.stdout.write(`Generowanie ${args.html ? 'HTML' : 'PDF'} faktury...\n`);
