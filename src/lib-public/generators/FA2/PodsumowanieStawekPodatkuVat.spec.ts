@@ -9,7 +9,7 @@ import {
   hasValue,
 } from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
-import type { Fa, Faktura } from '../../types/fa2.types';
+import { Fa, Faktura } from '../../types/fa2.types';
 
 vi.mock('../../../shared/PDF-functions', () => ({
   createHeader: vi.fn((text: string) => [{ text }]),

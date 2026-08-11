@@ -11,6 +11,7 @@ import { AdditionalDataTypes } from './types/common.types';
 import { generateFARR } from './FARR-generator';
 import { FaRR } from './types/FaRR.types';
 import { i18nReady } from './i18n/i18n-init';
+//import { render } from 'svelte/server';
 import { render, PdfmakeHtmlRenderer } from 'pdfmake-html-renderer/server';
 import { PdfmakeHtmlRendererProps } from 'pdfmake-html-renderer';
 
@@ -83,11 +84,9 @@ export async function generateInvoice(
       break;
     case 'blob':
       return pdfMake.createPdf(doc).getBlob();
-      break;
     case 'base64':
     default:
       return pdfMake.createPdf(doc).getBase64();
-      break;
   }
 }
 

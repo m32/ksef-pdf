@@ -1,4 +1,4 @@
-import { Watermark } from 'pdfmake/interfaces';
+import type { Watermark } from 'pdfmake/interfaces';
 
 export function generateWatermark(watermark?: string | Watermark): Record<'watermark', Watermark> | null {
   if (typeof watermark === 'string' && watermark.trim() !== '') {

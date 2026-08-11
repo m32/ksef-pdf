@@ -13,7 +13,7 @@
     "sourceMap": false,
 
     "target": "esnext",
-    "module": "esnext",
+    "module": "commonjs",
     "allowJs": false,
     "strict": true,
     "moduleResolution": "node",
@@ -29,8 +29,8 @@
     "node_modules",
     "dist",
     "dist-server",
-    "src/lib-public/**/*.spec.ts",   // ← Wyklucz testy
-    "src/lib-public/**/*.test.ts",   // ← Wyklucz testy
+    "src/lib-public/**/*.spec.ts",
+    "src/lib-public/**/*.test.ts",
     "**/*.spec.ts",
     "**/*.test.ts"
   ]

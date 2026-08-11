@@ -1,5 +1,5 @@
 import { FP } from '../../lib-public/types/fa3.types';
-import { ContentTable, Style } from 'pdfmake/interfaces';
+import type { ContentTable, Style } from 'pdfmake/interfaces';
 import FormatTyp from '../enums/common.enum';
 
 export interface CreateLabelTextData {
