@@ -8,8 +8,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:ci": "vitest run --coverage",
-    "build:exe": "npx esbuild app/ksef-pdf/KSeF-PDFGen.ts --bundle --platform=node --minify --outfile=dist/bundle.js && npx pkg dist/bundle.js --targets node24-win-x64 --compress Zstd --output KSeF-PDFGen.exe",
-    "build:elf": "npx esbuild app/ksef-pdf/KSeF-PDFGen.ts --bundle --platform=node --minify --outfile=dist/bundle.js && npx pkg dist/bundle.js --targets node24-lin-x64 --compress Zstd --output KSeF-PDFGen",
+    "build:exe": "npx esbuild app/ksef-pdf/KSeF-PDFGen.ts --bundle --platform=node --minify --outfile=dist/bundle.js",
     "build:server": "npx esbuild app/rest/index.ts --bundle --platform=node --format=cjs --packages=external --outfile=dist-server/server.cjs",
     "server:start": "node dist-server/server.cjs",
     "server:dev": "npm run build:server && node --watch dist-server/server.cjs"
@@ -54,13 +53,12 @@
     "typescript-eslint": "^8.40.0",
     "vite": "^7.0.6",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "express": "^5.2.1"
   },
   "dependencies": {
-    "@yao-pkg/pkg": "^6.21.0",
     "body-parser": "^2.3.0",
     "buffer": "^6.0.3",
-    "express": "^5.2.1",
     "pdfmake-html-renderer": "^0.4.1",
     "ts-node": "^10.9.2",
     "i18next": "^25.8.4",

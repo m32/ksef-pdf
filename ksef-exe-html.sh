@@ -1,7 +1,9 @@
 #!/bin/bash
-set -x
+#set -x
 
-./KSeF-PDFGen \
+exe=./ksef-pdf-1.1.36
+
+$exe \
 -t invoice \
 -i assets/invoice.xml \
 --nrKSeF "1111111111-20251107-080080679C57-14" \

@@ -1,0 +1,30 @@
+#!/bin/bash
+#set -x
+IMAGE_PROJECT=node
+IMAGE_TAG=trixie-slim
+XNAME=${IMAGE_PROJECT}:${IMAGE_TAG}
+
+XARGS=
+
+pull() {
+docker pull ${XNAME}
+}
+
+sea() {
+docker run -it --rm \
+--name node-sea \
+-v "$PWD/sea":/usr/src/app \
+-w /usr/src/app \
+${XNAME} \
+node sea-cross.js
+}
+
+if [ -z "$*" ]; then
+cat <<-EOF
+usage:
+    $0 pull
+    $0 sea
+EOF
+else
+$*
+fi

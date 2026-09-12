@@ -1,7 +1,8 @@
 #!/bin/bash
 set -x
+exe=./ksef-pdf-1.1.36
 
-./KSeF-PDFGen \
+$exe \
 -t invoice \
 -i assets/invoice.xml \
 --nrKSeF "1111111111-20251107-080080679C57-14" \
@@ -9,7 +10,7 @@ set -x
 --acdate 2026.05.02 \
 -o ksef-exe-fa-online.pdf
 
-./KSeF-PDFGen \
+$exe \
 -t invoice \
 -i assets/invoice.xml \
 --nrKSeF "1111111111-20251107-080080679C57-14" \
@@ -17,7 +18,7 @@ set -x
 --qr2Code "https://qr.ksef.mf.gov.pl/certificate/Nip/1111111111/{nip}/01F20A5D352AE590/..." \
 -o ksef-exe-fa-offline.pdf
 
-./KSeF-PDFGen \
+$exe \
 -t invoice \
 -i assets/invoice.xml \
 --nrKSeF "1111111111-20251107-080080679C57-14" \
@@ -25,7 +26,7 @@ set -x
 -o ksef-exe-fa-online.html \
 --html
 
-./KSeF-PDFGen \
+$exe \
 -t invoice \
 -i assets/invoice.xml \
 --nrKSeF "1111111111-20251107-080080679C57-14" \
@@ -34,12 +35,12 @@ set -x
 -o ksef-exe-fa-offline.html \
 --html
 
-./KSeF-PDFGen \
+$exe \
 -t upo \
 -i assets/upo.xml \
 -o ksef-exe-upo.pdf
 
-./KSeF-PDFGen \
+$exe \
 -t upo \
 -i assets/upo.xml \
 -o ksef-exe-upo.html \

@@ -1,0 +1,6 @@
+node_modules/
+.sea-cache/
+
+bundle.js
+
+exe/
