@@ -1,7 +1,10 @@
 #!/bin/bash
-set -x
-exe=./ksef-pdf-1.1.36
+#set -x
+exe=sea/exe/ksef-pdf-1.1.36
 
+rm ksef-exe-*.html ksef-exe-*.pdf
+
+if [ "$1" != "clean" ]; then
 $exe \
 -t invoice \
 -i assets/invoice.xml \
@@ -45,3 +48,4 @@ $exe \
 -i assets/upo.xml \
 -o ksef-exe-upo.html \
 --html
+fi

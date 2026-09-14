@@ -8,7 +8,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:ci": "vitest run --coverage",
-    "build:exe": "npx esbuild app/ksef-pdf/KSeF-PDFGen.ts --bundle --platform=node --minify --outfile=dist/bundle.js",
+    "build:exe": "npx esbuild app/ksef-pdf/KSeF-PDFGen.ts --bundle --platform=node --minify --outfile=dist/bundle.js && ./docker-nodejs sea",
     "build:server": "npx esbuild app/rest/index.ts --bundle --platform=node --format=cjs --packages=external --outfile=dist-server/server.cjs",
     "server:start": "node dist-server/server.cjs",
     "server:dev": "npm run build:server && node --watch dist-server/server.cjs"
@@ -59,7 +59,7 @@
   "dependencies": {
     "body-parser": "^2.3.0",
     "buffer": "^6.0.3",
-    "pdfmake-html-renderer": "^0.4.1",
+    "pdfmake-html-renderer": "^0.4.2",
     "ts-node": "^10.9.2",
     "i18next": "^25.8.4",
     "i18next-browser-languagedetector": "^8.2.0",

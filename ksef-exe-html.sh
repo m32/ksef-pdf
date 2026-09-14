@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -x
 
-exe=./ksef-pdf-1.1.36
+exe=sea/exe/ksef-pdf-1.1.36
 
 $exe \
 -t invoice \

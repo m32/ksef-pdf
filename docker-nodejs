@@ -14,6 +14,7 @@ sea() {
 docker run -it --rm \
 --name node-sea \
 -v "$PWD/sea":/usr/src/app \
+-v "$PWD/dist/bundle.js":/usr/src/app/bundle.js \
 -w /usr/src/app \
 ${XNAME} \
 node sea-cross.js
