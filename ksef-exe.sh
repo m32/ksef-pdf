@@ -1,6 +1,6 @@
 #!/bin/bash
 #set -x
-exe=sea/exe/ksef-pdf-1.1.36
+exe=sea/exe/ksef-pdf-1.1.40
 
 rm ksef-exe-*.html ksef-exe-*.pdf
 

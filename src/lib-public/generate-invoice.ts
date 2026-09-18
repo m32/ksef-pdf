@@ -11,6 +11,13 @@ import { AdditionalDataTypes } from './types/common.types';
 import { generateFARR } from './FARR-generator';
 import { FaRR } from './types/FaRR.types';
 import { i18nReady } from './i18n/i18n-init';
+import { generateCorrectivePEF } from './PEF-corrective-generator';
+import { generateBasicPEF } from './PEF-basic-generator';
+import { PEFBasicInvoice } from './types/pef-invoice.types';
+import { PEFCorrectiveInvoice } from './types/pef-invoice-corrective.types';
+import { PEFSpecInvoice } from './types/pef-invoice-spec.types';
+import { generateSpecPEF } from './PEF-spec-generator';
+
 //import { render } from 'svelte/server';
 import { render, PdfmakeHtmlRenderer } from 'pdfmake-html-renderer/server';
 import { PdfmakeHtmlRendererProps } from 'pdfmake-html-renderer';
@@ -37,9 +44,12 @@ export async function generateInvoice(
   additionalData: AdditionalDataTypes,
   formatType: FormatType = 'blob'
 ): Promise<FormatTypeResult> {
-  const wersja: any = (xml as any)?.Faktura?.Naglowek?.KodFormularza?._attributes?.kodSystemowy;
-
   let doc: TDocumentDefinitions;
+  const wersjaFa: any = (xml as any)?.Faktura?.Naglowek?.KodFormularza?._attributes?.kodSystemowy;
+  const wersjaPef: any =
+    (xml as any)?.Invoice?.ProfileID?._text ?? (xml as any)?.CreditNote?.ProfileID?._text;
+
+  const wersja = wersjaFa ?? wersjaPef;
 
   await i18nReady;
 
@@ -56,6 +66,15 @@ export async function generateInvoice(
     case 'FA_RR (1)':
     case 'FA_RR(1)':
       doc = generateFARR((xml as any).Faktura as FaRR, additionalData);
+      break;
+    case 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0':
+      doc = generateBasicPEF((xml as any).Invoice as PEFBasicInvoice, additionalData);
+      break;
+    case 'urn:fdc:www.efaktura.gov.pl:ver2.0:corr_inv:ver4.0':
+      doc = generateCorrectivePEF((xml as any).CreditNote as PEFCorrectiveInvoice, additionalData);
+      break;
+    case 'urn:fdc:www.efaktura.gov.pl:ver2.0:plinv:ver1.4':
+      doc = generateSpecPEF((xml as any).Invoice as PEFSpecInvoice, additionalData);
       break;
     default:
       throw new Error(`Unknown XML Version: ${wersja}`);
